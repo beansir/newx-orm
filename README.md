@@ -7,16 +7,11 @@ NewX ORM是一个简洁的数据库对象关系映射。（NewX ORM is a concise
 <?php
 return [
     'default' => [
-        // 地址
-        'host'      => '127.0.0.1',
-        // 用户名
-        'user'      => 'user',
-        // 密码
-        'password'  => 'password',
-        // 数据库名
-        'db'        => 'db',
-        // 连接方式
-        'type'      => 'mysqli'
+        'host'      => '127.0.0.1', // 地址
+        'user'      => 'user', // 用户名
+        'password'  => 'password', // 密码
+        'db'        => 'db', // 数据库名
+        'type'      => 'mysqli' // 连接方式
     ],
 ];
 ```
