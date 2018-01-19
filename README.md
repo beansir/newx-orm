@@ -7,11 +7,16 @@ NewX ORM是一个简洁的数据库对象关系映射。（NewX ORM is a concise
 <?php
 return [
     'default' => [
-        'host' => '127.0.0.1', // 地址
-        'user' => 'user', // 用户名
-        'password' => 'password', // 密码
-        'db' => 'db', // 数据库名
-        'type' => 'mysqli' // 连接方式
+        // 地址
+        'host'      => '127.0.0.1',
+        // 用户名
+        'user'      => 'user',
+        // 密码
+        'password'  => 'password',
+        // 数据库名
+        'db'        => 'db',
+        // 连接方式
+        'type'      => 'mysqli'
     ],
 ];
 ```
@@ -19,8 +24,13 @@ return [
 加载NewX ORM（请务必在应用运行之前加载）
 ```php
 <?php
+// 引入主体文件
 require 'newx-orm/NewxOrm.php';
-$db = require 'xxx/db.php'; // 上一步配置的数据库文件
+ 
+// 上一步配置的数据库文件
+$db = require 'xxx/db.php'; 
+ 
+// 运行ORM
 NewxOrm::run($db);
 ```
 
@@ -85,7 +95,6 @@ $user = $user->toArray();
 $user = Model_User::model()->where(['id' => 1])->one();
   
 // 方式二
- 
 $user = Model_User::getOne(['id' => 1]);
  
 // 方式三
