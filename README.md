@@ -35,7 +35,7 @@ class Model_User extends \newx\orm\base\Model
 }
 ```
 
-####使用指南
+## 使用指南
 
 创建数据模型
 ```php
