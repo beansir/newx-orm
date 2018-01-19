@@ -7,11 +7,11 @@ NewX ORM是一个简洁的数据库对象关系映射。（NewX ORM is a concise
 <?php
 return [
     'default' => [
-        'host' => '127.0.0.1', // 地址 host
-        'user' => 'user', // 用户名 user
-        'password' => 'password', // 密码 password
-        'db' => 'db', // 数据库名 database name
-        'type' => 'mysqli' // 连接方式 connect type
+        'host' => '127.0.0.1', // 地址
+        'user' => 'user', // 用户名
+        'password' => 'password', // 密码
+        'db' => 'db', // 数据库名
+        'type' => 'mysqli' // 连接方式
     ],
 ];
 ```
@@ -31,7 +31,7 @@ class Model_User extends \newx\orm\base\Model
 {
     public $table = 'user'; // 数据表名，默认default
     
-    public $database = 'default'; // 数据库配置，默认default
+    public $db = 'default'; // 数据库配置，默认default
 }
 ```
 
@@ -48,50 +48,90 @@ $user = Model_User::model();
 ```php
 <?php
 // @return array 模型对象数组
+// 方式一
 $user = Model_User::model()->all();
+ 
+// 方式二
+$user = Model_User::getAll();
 ```
 
 查询单条记录
 ```php
 <?php
 // @return Model_User
+// 方式一
 $user = Model_User::model()->one();
+ 
+// 方式二
+$user = Model_User::getOne();
 ```
 
 直接返回数组结果集
 ```php
 <?php
 // @return array 结果集数组
+// 方式一
 $user = Model_User::model()->asArray()->one();
+ 
+// 方式二
+$user = Model_User::model()->one();
+$user = $user->toArray();
 ```
 
 条件查询
 ```php
 <?php
-// 三种方式结果相同
+// 方式一
 $user = Model_User::model()->where(['id' => 1])->one();
+  
+// 方式二
+ 
 $user = Model_User::getOne(['id' => 1]);
+ 
+// 方式三
 $user = Model_User::getOne(1); // 主键查询
 ```
 
 表关联
 ```php
 <?php
-// 模型中关联用法
+// @return 关联的模型对象或对象数组，取决于hasOne还是hasMany
+// 方式一
+$log = Model_User::getOne(1)->getLog();
+ 
+// 方式二
+$log = Model_User::getOne(1)->log;
+ 
+// 模型中关联写法
 class Model_User extends \newx\orm\base\Model
 {
     // 关联Model_Log
     public function getLog()
     {
         return $this->hasOne(
-            Model_Log::className(), // 关联表的类名
-            'user_id', // 关联表的字段名
-            'id' // 本表的字段名
+            Model_Log::className(), // 关联表类名
+            'user_id', // 关联表字段名
+            'id' // 本表字段名
         );
     }
 }
-// 获取关联结果
-// @return 关联的模型对象或对象数组，取决于hasOne还是hasMany
-$log = Model_User::getOne(1)->getLog(); // 方法一
-$log = Model_User::getOne(1)->log; // 方法二
+```
+
+表连接
+```php
+<?php
+// 左连接
+$user = Model_User::model()
+    ->leftJoin(
+        'table name', // 连接表名
+        'join field', // 连接表字段名
+        'self field' // 本表字段名
+    )
+    ->all();
+ 
+// 右连接
+$user = Model_User::model()->rightJoin('table name', 'join field', 'self field')->all();
+ 
+// 内连接
+$user = Model_User::model()->innerJoin('table name', 'join field', 'self field')->all();
 ```

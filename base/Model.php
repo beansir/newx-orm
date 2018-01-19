@@ -20,7 +20,7 @@ class Model extends BaseObject
      * 数据库
      * @var string
      */
-    public $database = 'default';
+    public $db = 'default';
 
     /**
      * 操作属性
@@ -84,15 +84,21 @@ class Model extends BaseObject
     /**
      * 查询单条记录
      * @param array|mixed $where
-     * @return $this|array|null
+     * @throws \Exception
+     * @return Model|null
      */
     public static function getOne($where = null)
     {
         $object = self::model();
-        if ($where) {
-            $object->setWhere($where);
+        if (!is_array($where)) {
+            // 主键查询
+            $keys = $object->getPrimaryKey();
+            if (!$keys) {
+                throw new \Exception('Primary key not exists');
+            }
+            $where = $keys[0] . "='" . $where . "'";
         }
-        return $object->one();
+        return $object->setWhere($where)->one();
     }
 
     /**
@@ -157,35 +163,35 @@ class Model extends BaseObject
     /**
      * 关联读取单条记录
      * @param string $className 关联的类名
-     * @param string $relation_field 关联表的字段名
-     * @param string $self_field 本表的字段名
-     * @return object
+     * @param string $relationField 关联表的字段名
+     * @param string $selfField 本表的字段名
+     * @return Model|mixed
      */
-    public function hasOne($className, $relation_field, $self_field)
+    public function hasOne($className, $relationField, $selfField)
     {
-        return $this->createWithObject($className, $relation_field, $self_field)->one();
+        return $this->createRelationObject($className, $relationField, $selfField)->one();
     }
 
     /**
      * 关联读取多条记录
      * @param string $className 关联的类名
-     * @param string $relation_field 关联表的字段名
-     * @param string $self_field 本表的字段名
+     * @param string $relationField 关联表的字段名
+     * @param string $selfField 本表的字段名
      * @return array
      */
-    public function hasMany($className, $relation_field, $self_field)
+    public function hasMany($className, $relationField, $selfField)
     {
-        return $this->createWithObject($className, $relation_field, $self_field)->all();
+        return $this->createRelationObject($className, $relationField, $selfField)->all();
     }
 
     /**
      * 创建关联的实例
      * @param string $className 关联的类名
-     * @param string $relation_field 关联表的字段名
-     * @param string $self_field 本表的字段名
+     * @param string $relationField 关联表的字段名
+     * @param string $selfField 本表的字段名
      * @return $this
      */
-    private function createWithObject($className, $relation_field, $self_field)
+    private function createRelationObject($className, $relationField, $selfField)
     {
         /**
          * @var Model $object
@@ -198,7 +204,7 @@ class Model extends BaseObject
         $this->_query->tableName = $tableName;
 
         $where = [
-            $relation_field => $this->{$self_field}
+            $relationField => $this->{$selfField}
         ];
 
         return $this->where($where);
@@ -253,10 +259,11 @@ class Model extends BaseObject
         $field = $query->field ? $query->field : '*';
         $table = $query->tableName ? $query->tableName : $this->table;
         $table = "`" . $table . "`";
+        $join = ' ' . $query->join;
         $where = $query->where ? " WHERE " . $query->where : '';
         $order = $query->orderBy ? " ORDER BY " . $query->orderBy : '';
         $limit = $query->limit ? " LIMIT " . $query->limit : '';
-        $sql = "SELECT " . $field . " FROM " . $table . $where . $order . $limit;
+        $sql = "SELECT " . $field . " FROM " . $table . $join . $where . $order . $limit;
         return $sql;
     }
 
@@ -335,8 +342,7 @@ class Model extends BaseObject
 
     /**
      * 配置查询条件
-     * @param array $where
-     * @throws \Exception
+     * @param array|string|int $where
      * @return $this
      */
     private function setWhere($where)
@@ -348,11 +354,7 @@ class Model extends BaseObject
             }
             $this->_query->where = implode(' and ', $condition);
         } else {
-            $keys = $this->getPrimaryKey();
-            if (!$keys) {
-                throw new \Exception('Primary key not exists');
-            }
-            $this->_query->where = $keys[0] . "='" . $where . "'";
+            $this->_query->where = $where;
         }
         return $this;
     }
@@ -507,7 +509,7 @@ class Model extends BaseObject
     private function getDb()
     {
         $db = NewxOrm::$db;
-        $database = $this->database;
+        $database = $this->db;
 
         if (!property_exists($db, $database)) {
             throw new \Exception("database config not exists: '{$database}'");
@@ -578,5 +580,79 @@ class Model extends BaseObject
         } else {
             return $sql;
         }
+    }
+
+    /**
+     * 对象结果集转为数组
+     * @return array
+     */
+    public function toArray()
+    {
+        $data = [];
+        $attributes = $this->_attributes;
+        if ($attributes) {
+            foreach ($attributes as $key => $value) {
+                $data[$key] = $value;
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * 关联预加载
+     */
+    public function relation()
+    {
+
+    }
+
+    /**
+     * 左连接
+     * @param string $tableName 连接表名
+     * @param string $joinFiled 连接表字段名
+     * @param string $selfField 本表字段名
+     * @return $this
+     */
+    public function leftJoin($tableName, $joinFiled, $selfField)
+    {
+        return $this->join($tableName, $joinFiled, $selfField, 'left join');
+    }
+
+    /**
+     * 右连接
+     * @param string $tableName 连接表名
+     * @param string $joinFiled 连接表字段名
+     * @param string $selfField 本表字段名
+     * @return $this
+     */
+    public function rightJoin($tableName, $joinFiled, $selfField)
+    {
+        return $this->join($tableName, $joinFiled, $selfField, 'right join');
+    }
+
+    /**
+     * 内连接
+     * @param string $tableName 连接表名
+     * @param string $joinFiled 连接表字段名
+     * @param string $selfField 本表字段名
+     * @return $this
+     */
+    public function innerJoin($tableName, $joinFiled, $selfField)
+    {
+        return $this->join($tableName, $joinFiled, $selfField, 'inner join');
+    }
+
+    /**
+     * 表连接
+     * @param string $tableName 连接表名
+     * @param string $joinFiled 连接表字段名
+     * @param string $selfField 本表字段名
+     * @param string $type 连接类型
+     * @return $this
+     */
+    private function join($tableName, $joinFiled, $selfField, $type)
+    {
+        $this->_query->join = "{$type} `{$tableName}` on `{$this->table}`.{$selfField} = `{$tableName}`.{$joinFiled}";
+        return $this;
     }
 }

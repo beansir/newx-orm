@@ -29,9 +29,7 @@ class Query extends BaseObject
     public $limit;
 
     /**
-     * 返回数组，默认false
-     * ture = array
-     * false = object
+     * 是否返回数组结果集，默认false
      */
     public $asArray;
 
@@ -44,4 +42,9 @@ class Query extends BaseObject
      * 类名
      */
     public $className;
+
+    /**
+     * 表连接
+     */
+    public $join;
 }
