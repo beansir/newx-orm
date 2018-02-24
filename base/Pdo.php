@@ -11,14 +11,9 @@ class Pdo extends Mysql
     /**
      * 创建数据库连接
      */
-    private function createConnection()
+    private function connection()
     {
-        if (!isset($this->conn)) {
-            $this->conn = new \PDO("mysql:host=" . $this->host . ";dbname=" . $this->db . "", $this->user, $this->password);
-        }
-        if (empty($this->conn)) {
-            throw new \Exception('database connection error: access denied for user');
-        }
+        $this->conn = new \PDO("mysql:host=" . $this->host . ";dbname=" . $this->db, $this->user, $this->password);
         return $this->conn;
     }
 
@@ -29,24 +24,17 @@ class Pdo extends Mysql
     public function query()
     {
         $data = [];
-        $res = $this->createConnection()->query($this->sql);
+        $res = $this->connection()->query($this->sql);
         if ($res) {
             while ($row = $res->fetch()) {
                 $data[] = $row;
             }
         }
-        $this->closeConnection();
-        return $data;
-    }
 
-    /**
-     * 关闭数据库连接
-     */
-    private function closeConnection()
-    {
-        if (isset($this->conn)) {
-            unset($this->conn);
-        }
+        // 关闭数据库连接
+        unset($this->conn);
+
+        return $data;
     }
 
     /**
@@ -55,11 +43,44 @@ class Pdo extends Mysql
      */
     public function execute()
     {
-        $res = $this->createConnection()->exec($this->sql);
+        if (!$this->conn) {
+            $this->connection();
+        }
+        $res = $this->conn->exec($this->sql);
         if ($res) {
             return 1; // 执行成功
         } else {
             return 0; // 执行失败
         }
+    }
+
+    /**
+     * 开启事务
+     * @return bool
+     */
+    public function beginTransaction()
+    {
+        // 创建数据库连接
+        $this->connection();
+
+        return $this->conn->beginTransaction();
+    }
+
+    /**
+     * 提交事务
+     * @return bool
+     */
+    public function commit()
+    {
+        return $this->conn->commit();
+    }
+
+    /**
+     * 事务回滚
+     * @return bool
+     */
+    public function rollback()
+    {
+        return $this->conn->rollback();
     }
 }

@@ -11,12 +11,9 @@ class Mysqli extends Mysql
     /**
      * 创建数据库连接
      */
-    private function createConnection()
+    private function connection()
     {
-        $this->conn = @mysqli_connect($this->host, $this->user, $this->password, $this->db);
-        if (empty($this->conn)) {
-            throw new \Exception('database connection error: access denied for user');
-        }
+        $this->conn = new \mysqli($this->host, $this->user, $this->password, $this->db);
         return $this->conn;
     }
 
@@ -27,25 +24,21 @@ class Mysqli extends Mysql
     public function query()
     {
         $data = [];
-        $this->createConnection();
+
+        // 创建数据库连接
+        $this->connection();
+
         $res = mysqli_query($this->conn, $this->sql);
         if ($res) {
             while ($row = mysqli_fetch_assoc($res)) {
                 $data[] = $row;
             }
         }
-        $this->closeConnection();
-        return $data;
-    }
 
-    /**
-     * 关闭数据库连接
-     */
-    private function closeConnection()
-    {
-        if (isset($this->conn)) {
-            mysqli_close($this->conn);
-        }
+        // 关闭数据库连接
+        mysqli_close($this->conn);
+
+        return $data;
     }
 
     /**
@@ -54,7 +47,9 @@ class Mysqli extends Mysql
      */
     public function execute()
     {
-        $this->createConnection();
+        if (!$this->conn) {
+            $this->connection();
+        }
         $res = mysqli_query($this->conn, $this->sql);
         if ($res) {
             if (mysqli_affected_rows($this->conn) > 0) {
@@ -65,5 +60,35 @@ class Mysqli extends Mysql
         } else {
             return 0; // 执行失败
         }
+    }
+
+    /**
+     * 开启事务
+     * @return bool
+     */
+    public function beginTransaction()
+    {
+        // 创建数据库连接
+        $this->connection();
+
+        return $this->conn->begin_transaction();
+    }
+
+    /**
+     * 提交事务
+     * @return bool
+     */
+    public function commit()
+    {
+        return $this->conn->commit();
+    }
+
+    /**
+     * 事务回滚
+     * @return bool
+     */
+    public function rollback()
+    {
+        return $this->conn->rollback();
     }
 }

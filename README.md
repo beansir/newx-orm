@@ -32,7 +32,7 @@ NewxOrm::run($db);
 继承NewX ORM Model
 ```php
 <?php
-class Model_User extends \newx\orm\base\Model
+class UserModel extends \newx\orm\base\Model
 {
     public $table = 'user'; // 数据表名，默认default
     
@@ -46,7 +46,7 @@ class Model_User extends \newx\orm\base\Model
 ```php
 <?php
 // @return Model_User
-$user = Model_User::model();
+$user = UserModel::model();
 ```
 
 查询所有记录
@@ -54,10 +54,10 @@ $user = Model_User::model();
 <?php
 // @return array 模型对象数组
 // 方式一
-$user = Model_User::model()->all();
+$user = UserModel::model()->all();
  
 // 方式二
-$user = Model_User::getAll();
+$user = UserModel::getAll();
 ```
 
 查询单条记录
@@ -65,10 +65,10 @@ $user = Model_User::getAll();
 <?php
 // @return Model_User
 // 方式一
-$user = Model_User::model()->one();
+$user = UserModel::model()->one();
  
 // 方式二
-$user = Model_User::getOne();
+$user = UserModel::getOne();
 ```
 
 直接返回数组结果集
@@ -76,10 +76,10 @@ $user = Model_User::getOne();
 <?php
 // @return array 结果集数组
 // 方式一
-$user = Model_User::model()->asArray()->one();
+$user = UserModel::model()->asArray()->one();
  
 // 方式二
-$user = Model_User::model()->one();
+$user = UserModel::model()->one();
 $user = $user->toArray();
 ```
 
@@ -87,13 +87,13 @@ $user = $user->toArray();
 ```php
 <?php
 // 方式一
-$user = Model_User::model()->where(['id' => 1])->one();
+$user = UserModel::model()->where(['id' => 1])->one();
   
 // 方式二
-$user = Model_User::getOne(['id' => 1]);
+$user = UserModel::getOne(['id' => 1]);
  
 // 方式三
-$user = Model_User::getOne(1); // 主键查询
+$user = UserModel::getOne(1); // 主键查询
 ```
 
 表关联
@@ -101,19 +101,19 @@ $user = Model_User::getOne(1); // 主键查询
 <?php
 // @return 关联的模型对象或对象数组，取决于hasOne还是hasMany
 // 方式一
-$log = Model_User::getOne(1)->getLog();
+$log = UserModel::getOne(1)->getLog();
  
 // 方式二
-$log = Model_User::getOne(1)->log;
+$log = UserModel::getOne(1)->log;
  
 // 模型中关联写法
-class Model_User extends \newx\orm\base\Model
+class UserModel extends \newx\orm\base\Model
 {
     // 关联Model_Log
     public function getLog()
     {
         return $this->hasOne(
-            Model_Log::className(), // 关联表类名
+            LogModel::className(), // 关联表类名
             'user_id', // 关联表字段名
             'id' // 本表字段名
         );
@@ -125,7 +125,7 @@ class Model_User extends \newx\orm\base\Model
 ```php
 <?php
 // 左连接
-$user = Model_User::model()
+$user = UserModel::model()
     ->leftJoin(
         'table name', // 连接表名
         'join field', // 连接表字段名
@@ -134,8 +134,35 @@ $user = Model_User::model()
     ->all();
  
 // 右连接
-$user = Model_User::model()->rightJoin('table name', 'join field', 'self field')->all();
+$user = UserModel::model()->rightJoin('table name', 'join field', 'self field')->all();
  
 // 内连接
-$user = Model_User::model()->innerJoin('table name', 'join field', 'self field')->all();
+$user = UserModel::model()->innerJoin('table name', 'join field', 'self field')->all();
+```
+
+SQL语句直接执行
+```php
+<?php
+$db = NewxOrm::getDb();
+ 
+// 查询 @return array
+$db->query($sql);
+ 
+// 增删改 @return int
+$db->execute($sql);
+```
+
+事务管理
+```php
+<?php
+$db = NewxOrm::getDb();
+ 
+// 开启事务 @return bool
+$db->beginTransaction();
+ 
+// 提交事务 @return bool
+$db->commit();
+ 
+// 事务回滚 @return bool
+$db->rollback();
 ```

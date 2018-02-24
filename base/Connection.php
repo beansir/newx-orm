@@ -15,10 +15,16 @@ class Connection extends BaseObject
     private $_db;
 
     /**
-     * 执行语句
-     * @var string
+     * 类型 - 查询
+     * @var int
      */
-    private $_sql;
+    const TYPE_QUERY = 0;
+
+    /**
+     * 类型 - 增删改
+     * @var int
+     */
+    const TYPE_EXECUTE = 1;
 
     /**
      * Connection constructor.
@@ -52,51 +58,78 @@ class Connection extends BaseObject
     }
 
     /**
-     * 创建查询语句
-     * @param string $sql
-     * @return $this
-     */
-    public function setSql($sql = null)
-    {
-        if (!empty($sql)) {
-            $this->_sql = $sql;
-        }
-        return $this;
-    }
-
-    /**
      * 查询
+     * @param string $sql
+     * @return array
      */
-    public function query()
+    public function query($sql)
     {
-        $this->validateSQL('query');
-        return $this->_db->setSQL($this->_sql)->query();
+        self::validateSQL($sql, self::TYPE_QUERY);
+        return $this->_db->setSQL($sql)->query();
     }
 
     /**
      * 增删改
+     * @param string $sql
+     * @return int
      */
-    public function execute()
+    public function execute($sql)
     {
-        $this->validateSQL('execute');
-        return $this->_db->setSQL($this->_sql)->execute();
+        self::validateSQL($sql, self::TYPE_EXECUTE);
+        return $this->_db->setSQL($sql)->execute();
     }
 
     /**
-     * 验证sql语句的合理性
+     * 检验sql语句的合理性
+     * @param string $sql
      * @param string $type SQL类型
      * @throws \Exception
      */
-    private function validateSQL($type)
+    public static function validateSQL($sql = null, $type)
     {
-        if ($type == 'query') {
-            if (stristr($this->_sql, 'update') || stristr($this->_sql, 'delete')) {
-                throw new \Exception('unavailable query()');
-            }
-        } elseif ($type == 'execute') {
-            if (stristr($this->_sql, 'select')) {
-                throw new \Exception('unavailable execute()');
-            }
+        if (!$sql) {
+            throw new \Exception('sql not exists');
         }
+        switch ($type) {
+            case self::TYPE_QUERY:
+                if (stristr($sql, 'update') || stristr($sql, 'delete')) {
+                    throw new \Exception('please call the execute');
+                }
+                break;
+            case self::TYPE_EXECUTE:
+                if (stristr($sql, 'select')) {
+                    throw new \Exception('please call the query');
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 开启事务
+     * @return bool
+     */
+    public function beginTransaction()
+    {
+        return $this->_db->beginTransaction();
+    }
+
+    /**
+     * 提交事务
+     * @return bool
+     */
+    public function commit()
+    {
+        return $this->_db->commit();
+    }
+
+    /**
+     * 事务回滚
+     * @return bool
+     */
+    public function rollback()
+    {
+        return $this->_db->rollback();
     }
 }

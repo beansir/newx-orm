@@ -69,10 +69,25 @@ class Mysql implements MysqlInterface
     /**
      * 查询
      */
-    public function query(){}
+    public function query() {}
 
     /**
      * 增删改
      */
-    public function execute(){}
+    public function execute() {}
+
+    /**
+     * 开启事务
+     */
+    public function beginTransaction() {}
+
+    /**
+     * 提交事务
+     */
+    public function commit() {}
+
+    /**
+     * 事务回滚
+     */
+    public function rollback() {}
 }

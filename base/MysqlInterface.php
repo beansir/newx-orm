@@ -32,4 +32,22 @@ interface MysqlInterface
      * @return $this
      */
     public function setSQL($sql = null);
+
+    /**
+     * 开启事务
+     * @return bool
+     */
+    public function beginTransaction();
+
+    /**
+     * 提交事务
+     * @return bool
+     */
+    public function commit();
+
+    /**
+     * 事务回滚
+     * @return bool
+     */
+    public function rollback();
 }
