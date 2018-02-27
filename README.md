@@ -2,6 +2,7 @@
 
 NewX ORM是一个简洁的数据库对象关系映射。（NewX ORM is a concise database object relational mapping.）
 
+#### 数据库配置文件
 创建一个数据库配置文件，存放于你自己的项目中，格式如下
 ```php
 <?php
@@ -16,7 +17,8 @@ return [
 ];
 ```
 
-加载NewX ORM（请务必在应用运行之前加载）
+#### 加载ORM
+请务必在应用运行之前加载
 ```php
 <?php
 // 引入主体文件
@@ -29,7 +31,7 @@ $db = require 'xxx/db.php';
 NewxOrm::run($db);
 ```
 
-继承NewX ORM Model
+#### 继承Model
 ```php
 <?php
 class UserModel extends \newx\orm\base\Model
@@ -42,14 +44,14 @@ class UserModel extends \newx\orm\base\Model
 
 ## 使用指南
 
-创建数据模型
+#### 创建数据模型
 ```php
 <?php
 // @return Model_User
 $user = UserModel::model();
 ```
 
-查询所有记录
+#### 查询所有记录
 ```php
 <?php
 // @return array 模型对象数组
@@ -60,7 +62,7 @@ $user = UserModel::model()->all();
 $user = UserModel::getAll();
 ```
 
-查询单条记录
+#### 查询单条记录
 ```php
 <?php
 // @return Model_User
@@ -71,7 +73,7 @@ $user = UserModel::model()->one();
 $user = UserModel::getOne();
 ```
 
-直接返回数组结果集
+#### 定义数组结果集
 ```php
 <?php
 // @return array 结果集数组
@@ -83,7 +85,7 @@ $user = UserModel::model()->one();
 $user = $user->toArray();
 ```
 
-条件查询
+#### 条件查询
 ```php
 <?php
 // 方式一
@@ -96,7 +98,7 @@ $user = UserModel::getOne(['id' => 1]);
 $user = UserModel::getOne(1); // 主键查询
 ```
 
-表关联
+#### 表关联
 ```php
 <?php
 // @return 关联的模型对象或对象数组，取决于hasOne还是hasMany
@@ -121,7 +123,7 @@ class UserModel extends \newx\orm\base\Model
 }
 ```
 
-表连接
+#### 表连接
 ```php
 <?php
 // 左连接
@@ -140,7 +142,7 @@ $user = UserModel::model()->rightJoin('table name', 'join field', 'self field')-
 $user = UserModel::model()->innerJoin('table name', 'join field', 'self field')->all();
 ```
 
-SQL语句直接执行
+#### 执行SQL语句
 ```php
 <?php
 $db = NewxOrm::getDb();
@@ -152,7 +154,7 @@ $db->query($sql);
 $db->execute($sql);
 ```
 
-事务管理
+#### 事务管理
 ```php
 <?php
 $db = NewxOrm::getDb();
