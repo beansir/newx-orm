@@ -1,0 +1,17 @@
+{
+  "name": "newx/newx-orm",
+  "description": "A concise database object relational mapping",
+  "keywords": ["NewX", "ORM", "ActiveRecord"],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "bean",
+      "email": "1052049021@qq.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6"
+  },
+  "minimum-stability": "stable"
+}
