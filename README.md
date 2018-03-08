@@ -1,6 +1,12 @@
 <h2 align="center">NewX ORM</h2>
 
-NewX ORM是一个简洁的数据库对象关系映射。（NewX ORM is a concise database object relational mapping.）
+NewX ORM是一个简洁的数据库对象关系映射。
+
+## 安装说明
+使用composer一键安装
+```
+composer require beansir/newx-orm
+```
 
 #### 数据库配置文件
 创建一个数据库配置文件，存放于你自己的项目中，格式如下
@@ -22,7 +28,7 @@ return [
 ```php
 <?php
 // 引入主体文件
-require 'newx-orm/NewxOrm.php';
+require './vendor/beansir/newx-orm/NewxOrm.php';
  
 // 上一步配置的数据库文件
 $db = require 'xxx/db.php'; 

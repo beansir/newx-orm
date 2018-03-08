@@ -1,13 +1,8 @@
 <?php
 /**
  * @author bean
- * @version 1.0
+ * @version 2.0
  */
+require __DIR__ . '/config.php'; // 全局常量配置
 
-define('NEWX_ORM_PATH', __DIR__); // 根目录
-
-require NEWX_ORM_PATH . '/base/BaseOrm.php';
-
-class NewxOrm extends \newx\orm\base\BaseOrm {}
-
-NewxOrm::init();
+class NewxOrm extends \newx\orm\base\NewxOrm {}
