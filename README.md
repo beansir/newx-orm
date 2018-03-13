@@ -27,14 +27,8 @@ return [
 请务必在应用运行之前加载
 ```php
 <?php
-// 引入主体文件
-require './vendor/beansir/newx-orm/NewxOrm.php';
- 
-// 上一步配置的数据库文件
-$db = require 'xxx/db.php'; 
- 
-// 运行ORM
-NewxOrm::run($db);
+$db = require 'xxx/db.php'; // 上一步配置的数据库文件
+\newx\orm\NewxOrm::load($db);
 ```
 
 #### 继承Model

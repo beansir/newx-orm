@@ -6,8 +6,6 @@
  */
 namespace newx\orm\base;
 
-use NewxOrm;
-
 class Model extends BaseObject
 {
     /**
@@ -223,7 +221,7 @@ class Model extends BaseObject
     private function buildQuery()
     {
         $sql = $this->getQuerySql();
-        return $this->getDb()->setSql($sql)->query();
+        return $this->getDb()->query($sql);
     }
 
     /**
@@ -402,7 +400,7 @@ class Model extends BaseObject
     public function save()
     {
         $sql = $this->getExecSql();
-        return $this->getDb()->setSql($sql)->execute();
+        return $this->getDb()->execute($sql);
     }
 
     /**
@@ -477,7 +475,7 @@ class Model extends BaseObject
             $table = $this->table;
             $sql = "DESCRIBE " . $table;
             $db = $this->getDb();
-            $this->_tableDescribes = $db->setSql($sql)->query();
+            $this->_tableDescribes = $db->query($sql);
         }
         return $this->_tableDescribes;
     }

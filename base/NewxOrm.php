@@ -11,7 +11,7 @@ class NewxOrm
      * 运行ORM
      * @param array $config
      */
-    public static function run($config = [])
+    public static function load($config = [])
     {
         // 加载数据库
         DataBase::load($config);

@@ -1,4 +1,6 @@
 <?php
+namespace newx\orm;
+
 /**
  * @author bean
  * @version 2.0
